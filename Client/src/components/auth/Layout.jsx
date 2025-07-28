@@ -1,9 +1,8 @@
-import React from "react";
 import { Outlet } from "react-router-dom";
 
 const Layout = () => {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex w-screen h-screen overflow-hidden">
       {/* Left side */}
       <div className="w-1/2 bg-black text-white flex items-center justify-center">
         <h1 className="text-3xl font-bold text-center leading-relaxed">
@@ -11,11 +10,9 @@ const Layout = () => {
         </h1>
       </div>
 
-      {/* Right side: center vertically + horizontally */}
+      {/* Right side */}
       <div className="w-1/2 bg-white flex items-center justify-center">
-        <div className="w-full max-w-sm">
-          <Outlet />
-        </div>
+        <Outlet />
       </div>
     </div>
   );
