@@ -9,7 +9,7 @@ function AdminLayout () {
 {/* admin sidebar */}
 <AdminSidebar/>
 <div className="flex flex-1 flex-col">
-{/* admin sidebar **/}
+{/* admin sidebar ***/}
 <AdminHeader/>
         <main className="flex-1 flex bg-muted/40 p-4 md:p-6">
 
