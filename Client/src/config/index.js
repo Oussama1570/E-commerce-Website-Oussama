@@ -5,6 +5,7 @@ export const registerFormControls = [
     placeholder: "Enter your user name",
     componentType: "input",
     type: "text",
+    
   },
   {
     name: "email",
