@@ -11,7 +11,7 @@ const Layout = () => {
 
       </div>
 
-      {/* Right side */}
+      {/* Right side **/}
       <div className="w-1/2 bg-white flex items-center justify-center">
         <Outlet />
       </div>
