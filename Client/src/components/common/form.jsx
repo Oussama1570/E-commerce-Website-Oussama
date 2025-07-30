@@ -28,7 +28,8 @@ function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText 
                 [getControlItem.name]: event.target.value,
               })
             }
-            className="w-full px-3 py-2 border border-input bg-background text-sm rounded-md"
+           className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-black text-sm rounded-md"
+
           />
         );
         break;
@@ -72,7 +73,8 @@ function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText 
                 [getControlItem.name]: event.target.value,
               })
             }
-            className="w-full px-3 py-2 border border-input bg-background text-sm rounded-md"
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-black text-sm rounded-md"
+
           />
         );
         break;
