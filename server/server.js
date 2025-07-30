@@ -2,7 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const cors = require ('cors');
-const authRouter = require('./routes/auth/auth-routes');
+const authRouter = require('./routes/auth-routes');
 
 // create a database connection -> you can also //
 // create a seperate file for this and then import/use that file

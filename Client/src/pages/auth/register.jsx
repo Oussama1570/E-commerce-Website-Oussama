@@ -16,6 +16,8 @@ const [formData, setFormData] = useState(initialState)
 
 function onSubmit() {
 
+    console.log(formData)
+
 
 }
 
