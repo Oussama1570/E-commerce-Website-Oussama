@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 const cors = require ('cors');
 const authRouter = require('./routes/auth/auth-routes');
 
-// create a database connection -> you can also
+// create a database connection -> you can also //
 // create a seperate file for this and then import/use that file
 mongoose.connect('mongodb+srv://messamessusyahoocom:Oussema157000@cluster0.rmjdrme.mongodb.net/')
 .then(()=> console.log("MongoDB connected"))
