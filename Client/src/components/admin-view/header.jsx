@@ -11,8 +11,8 @@ function AdminHeader({ setOpen }) {
   };
 
   return (
-    <header className="flex items-center justify-between px-6 py-3 border-b bg-white shadow-sm">
-      {/* Left side: Burger icon for mobile */}
+    <header className="flex items-center px-6 py-3 border-b bg-background">
+      {/* 🍔 Burger icon (left on mobile only) */}
       <Button
         onClick={() => setOpen(true)}
         className="lg:hidden"
@@ -23,10 +23,10 @@ function AdminHeader({ setOpen }) {
         <span className="sr-only">Toggle Menu</span>
       </Button>
 
-      {/* Spacer pushes logout to the right */}
+      {/* 👈 Spacer to push logout to the right */}
       <div className="flex-1" />
 
-      {/* Right side: Logout button */}
+      {/* 🔒 Logout Button (right aligned) */}
       <Button
         onClick={handleLogout}
         className="bg-black text-white hover:bg-gray-800 px-4 py-2 rounded-md text-sm font-medium flex items-center gap-2"

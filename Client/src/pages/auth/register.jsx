@@ -1,20 +1,16 @@
-import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import {Link} from "react-router-dom";
-import { registerFormControls } from './../../config/index';
+import CommonForm from "@/components/common/form";
+import { useToast } from "@/components/ui/use-toast";
+import { registerFormControls } from "@/config";
+import { registerUser } from "@/store/auth-slice";
 import { useState } from "react";
-import CommonForm from './../../components/common/form';
-import { registerUser } from '@/store/auth-slice';
-import { useToast } from '@/hooks/use-toast';
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 const initialState = {
-  username: '',
-  email: '',
-  password: '',
+  userName: "",
+  email: "",
+  password: "",
 };
-
-
-
 
 function AuthRegister() {
   const [formData, setFormData] = useState(initialState);
@@ -24,29 +20,35 @@ function AuthRegister() {
 
   function onSubmit(event) {
     event.preventDefault();
-
     dispatch(registerUser(formData)).then((data) => {
       if (data?.payload?.success) {
         toast({
-          title: data.payload.message,
+          title: data?.payload?.message,
         });
         navigate("/auth/login");
       } else {
         toast({
           title: data?.payload?.message,
-          
+          variant: "destructive",
         });
       }
     });
   }
 
+  console.log(formData);
+
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Create new account</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          Create new account
+        </h1>
         <p className="mt-2">
           Already have an account
-          <Link className="font-medium ml-2 text-primary hover:underline" to='/auth/login'>
+          <Link
+            className="font-medium ml-2 text-primary hover:underline"
+            to="/auth/login"
+          >
             Login
           </Link>
         </p>

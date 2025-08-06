@@ -1,53 +1,57 @@
+// src/components/admin-view/AdminSideBar.jsx
+
 import {
   LayoutDashboard,
   ShoppingBasket,
   BadgeCheck,
   BarChart3,
+  LogOut,
 } from "lucide-react";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 const adminSidebarMenuItems = [
   {
     id: "dashboard",
     label: "Dashboard",
     path: "/admin/dashboard",
-    icon: <LayoutDashboard size={18} />,
+    icon: <LayoutDashboard size={20} />,
   },
   {
     id: "products",
     label: "Products",
     path: "/admin/products",
-    icon: <ShoppingBasket size={18} />,
+    icon: <ShoppingBasket size={20} />,
   },
   {
     id: "orders",
     label: "Orders",
     path: "/admin/orders",
-    icon: <BadgeCheck size={18} />,
+    icon: <BadgeCheck size={20} />,
   },
-  {
-    id: "analytics",
-    label: "Analytics",
-    path: "/admin/analytics",
-    icon: <BarChart3 size={18} />,
-  },
+  
 ];
 
 function MenuItems({ setOpen }) {
   const navigate = useNavigate();
 
   return (
-    <nav className="mt-6 flex flex-col gap-1">
+    <nav className="mt-6 flex-col flex gap-2">
       {adminSidebarMenuItems.map((item) => (
         <div
           key={item.id}
           onClick={() => {
             navigate(item.path);
-            if (setOpen) setOpen(false);
+            setOpen?.(false);
           }}
-          className="flex items-center gap-2 px-4 py-2 text-sm cursor-pointer text-muted-foreground hover:bg-muted hover:text-foreground rounded-md"
+          className="flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-black cursor-pointer transition-all duration-200"
         >
           {item.icon}
           <span>{item.label}</span>
@@ -62,35 +66,44 @@ function AdminSideBar({ open, setOpen }) {
 
   return (
     <Fragment>
-      {/* Mobile Sidebar */}
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent
-          side="left"
-          className="w-64 bg-white px-0 pt-4 shadow-xl"
-        >
-          <div className="flex flex-col h-full">
-            <SheetHeader className="border-b px-6 pb-4">
-              <SheetTitle className="flex items-center gap-2">
-                <BarChart3 size={20} />
-                <h1 className="text-base font-bold">Admin Panel</h1>
-              </SheetTitle>
-            </SheetHeader>
-            <div className="px-2">
-              <MenuItems setOpen={setOpen} />
-            </div>
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-64 flex-col border-r bg-white p-6">
+      {/* ✅ Mobile Sidebar - Sheet (ShadCN) */}
+    
+<Sheet open={open} onOpenChange={setOpen}>
+  <SheetContent side="left" className="w-64 p-0 bg-white shadow-lg">
+    <div className="flex flex-col h-full justify-between text-black">
+      
+      {/* 👆 Top Section: Logo & Menu */}
+      <div>
         <div
           onClick={() => navigate("/admin/dashboard")}
-          className="flex items-center gap-2 cursor-pointer"
+          className="flex items-center gap-2 p-4 border-b cursor-pointer"
         >
           <BarChart3 size={20} />
-          <h1 className="text-base font-bold">Admin Panel</h1>
+          <h1 className="text-lg font-bold">Admin Panel</h1>
         </div>
+
+        {/* Your navigation items */}
+        <MenuItems setOpen={setOpen} />
+      </div>
+
+      
+
+    </div>
+  </SheetContent>
+</Sheet>
+
+
+
+      {/* ✅ Desktop Sidebar (visible from md and above only) */}
+      <aside className="hidden md:block w-64 min-h-screen bg-white border-r p-4 shadow-md">
+        <div
+          onClick={() => navigate("/admin/dashboard")}
+          className="flex items-center gap-2 cursor-pointer mb-6"
+        >
+          <BarChart3 size={24} />
+          <h1 className="text-xl font-bold">Admin Panel</h1>
+        </div>
+
         <MenuItems />
       </aside>
     </Fragment>

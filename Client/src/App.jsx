@@ -18,7 +18,7 @@ import Unauthpage from "./pages/unauth-page/index.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { checkAuth } from "./store/auth-slice/index.js";
-import { Skeleton } from "./components/ui/skeleton.tsx";
+import { Skeleton } from "./components/ui/skeleton.jsx";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector((state) => state.auth);
