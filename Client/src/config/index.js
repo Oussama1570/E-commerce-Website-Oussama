@@ -1,11 +1,12 @@
+import { BadgeCheck, LayoutDashboard, ShoppingBasket } from "lucide-react";
+
 export const registerFormControls = [
   {
-    name: "userName",
+    name: "username", 
     label: "User Name",
     placeholder: "Enter your user name",
     componentType: "input",
     type: "text",
-    
   },
   {
     name: "email",
@@ -45,3 +46,4 @@ export const loginFormControls = [
    
  
 ];
+

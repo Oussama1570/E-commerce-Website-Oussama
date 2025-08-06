@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useSearchParams } from "react-router-dom";
 import AuthLayout from "./components/auth/Layout.jsx";
 import AuthLogin from "./pages/auth/login.jsx";
 import AuthRegister from "./pages/auth/register.jsx";
@@ -15,11 +15,23 @@ import ShoppingAccount from "./pages/shopping-view/account.jsx";
 import ShoppingHome from "./pages/shopping-view/home.jsx";
 import CheckAuth from "./components/common/check-auth.jsx";
 import Unauthpage from "./pages/unauth-page/index.jsx";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { checkAuth } from "./store/auth-slice/index.js";
+import { Skeleton } from "./components/ui/skeleton.tsx";
 
 function App() {
-  const isAuthenticated = false;
-  const user = null;
- 
+  const { user, isAuthenticated, isLoading } = useSelector((state) => state.auth);
+  const dispatch = useDispatch(); // ✅ Correct usage
+
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
+
+  if (isLoading) return <Skeleton className="w-[800] bg-black h-[600px]" />;
+   console.log(isLoading, user);
+
+  
 
   return (
     <div className="flex flex-col overflow-hidden bg-white">
