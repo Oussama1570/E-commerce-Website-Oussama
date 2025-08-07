@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Input } from "../ui/input";
 import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,22 +14,30 @@ function ProductsImageUpload({
 }) {
   const inputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
+  const [imageLoadingState, setImageLoadingState] = useState(false);
 
-  async function handleImageUpload(file) {
+  async function uploadImageToCloudinary(file) {
     try {
-      const formData = new FormData();
-      formData.append("image", file);
-      setUploading(true);
+      setImageLoadingState(true);
+      const data = new FormData();
+      data.append("my_file", file);
 
-      const res = await axios.post("http://localhost:5000/api/upload", formData);
-      const url = res.data.url;
+      const response = await axios.post(
+        "http://localhost:5000/api/admin/products/upload-image",
+        data
+      );
 
-      setUploadedImageUrl(url);
-      setFormData((prev) => ({ ...prev, image: url }));
+      console.log(response, "response");
+
+      if (response?.data?.result?.url) {
+        const imageUrl = response.data.result.url;
+        setUploadedImageUrl(imageUrl);
+        setFormData((prev) => ({ ...prev, image: imageUrl }));
+      }
     } catch (error) {
-      console.error("Image upload failed:", error);
+      console.error("Upload failed", error);
     } finally {
-      setUploading(false);
+      setImageLoadingState(false);
     }
   }
 
@@ -37,7 +45,6 @@ function ProductsImageUpload({
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       setImageFile(selectedFile);
-      handleImageUpload(selectedFile);
     }
   }
 
@@ -50,7 +57,6 @@ function ProductsImageUpload({
     const droppedFile = event.dataTransfer.files?.[0];
     if (droppedFile) {
       setImageFile(droppedFile);
-      handleImageUpload(droppedFile);
     }
   }
 
@@ -61,16 +67,23 @@ function ProductsImageUpload({
     if (inputRef.current) inputRef.current.value = "";
   }
 
+  useEffect(() => {
+    if (imageFile !== null) {
+      uploadImageToCloudinary(imageFile);
+    }
+  }, [imageFile]);
+
   return (
     <div className="w-full mt-4">
-      <Label className="text-sm font-medium text-gray-700">Upload Image</Label>
+      <Label className="text-sm font-medium text-gray-700">
+        Upload Image
+      </Label>
 
       <div
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         className="border-2 border-dashed rounded-md p-4 mt-2"
       >
-        {/* Hidden file input */}
         <input
           id="image-upload"
           type="file"
@@ -79,7 +92,6 @@ function ProductsImageUpload({
           onChange={handleImageFileChange}
         />
 
-        {/* Show this when no file is selected */}
         {!imageFile && !uploading ? (
           <Label
             htmlFor="image-upload"
@@ -88,13 +100,13 @@ function ProductsImageUpload({
             <UploadCloudIcon className="w-10 h-10 text-gray-400 mb-2" />
             <span>Drag & drop or click to upload image</span>
           </Label>
-        ) : uploading ? (
+        ) : uploading || imageLoadingState ? (
           <p className="text-sm text-blue-500">Uploading...</p>
         ) : (
           <div className="flex items-center justify-between mt-2">
             <div className="flex items-center gap-2">
               <FileIcon className="w-6 h-6 text-blue-600" />
-              <p className="text-sm font-medium">{imageFile.name}</p>
+              <p className="text-sm font-medium">{imageFile?.name}</p>
             </div>
             <Button
               variant="ghost"

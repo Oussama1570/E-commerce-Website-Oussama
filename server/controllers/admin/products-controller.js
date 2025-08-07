@@ -20,5 +20,3 @@ const handleImageUpload = async (req, res) => {
 module.exports = {
   handleImageUpload,
 };
-
-

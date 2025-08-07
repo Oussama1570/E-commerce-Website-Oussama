@@ -22,6 +22,7 @@ function AdminProducts() {
 
   const [imageFile, setImageFile] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+  const [imageLoadingState, setImageLoadingState] = useState(false)
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -54,7 +55,8 @@ function AdminProducts() {
             setImageFile={setImageFile}
             uploadedImageUrl={uploadedImageUrl}
             setUploadedImageUrl={setUploadedImageUrl}
-            setFormData={setFormData} // 🔁 Needed to update formData.image
+            setFormData={setFormData}
+            setImageLoadingState={setImageLoadingState}
           />
 
           {/* 📝 Form Inputs */}
