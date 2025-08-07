@@ -1,68 +1,115 @@
-import { Label } from "@radix-ui/react-dropdown-menu";
-
-import { useRef } from 'react';
+import { useRef, useState } from "react";
 import { Input } from "../ui/input";
-import { FileIcon, UploadCloudIcon } from "lucide-react";
+import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import axios from "axios";
 
+function ProductsImageUpload({
+  imageFile,
+  setImageFile,
+  uploadedImageUrl,
+  setUploadedImageUrl,
+  setFormData,
+}) {
+  const inputRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
 
-function ProductsImageUpload({imageFile, setImageFile, uploadedImageUrl, setUploadedImageUrl}) {
+  async function handleImageUpload(file) {
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+      setUploading(true);
 
-const inputRef = useRef(null);
+      const res = await axios.post("http://localhost:5000/api/upload", formData);
+      const url = res.data.url;
 
-function handleImageFileChange(event){
-    console.log(event.target.files);
-    const selectedFile = event.target.files?.[0]
-    if(selectedFile) setImageFile(selectedFile)
+      setUploadedImageUrl(url);
+      setFormData((prev) => ({ ...prev, image: url }));
+    } catch (error) {
+      console.error("Image upload failed:", error);
+    } finally {
+      setUploading(false);
+    }
+  }
 
-}
+  function handleImageFileChange(event) {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      setImageFile(selectedFile);
+      handleImageUpload(selectedFile);
+    }
+  }
 
-function handleDragOver(event){
-      event.preventDefault()
-}
+  function handleDragOver(event) {
+    event.preventDefault();
+  }
 
-function handleDrop(event){
-     event.preventDefault()
-     const droppedFile = event.dataTransfer.files?.[0];
-     if(droppedFile) setImageFile(droppedFile)
+  function handleDrop(event) {
+    event.preventDefault();
+    const droppedFile = event.dataTransfer.files?.[0];
+    if (droppedFile) {
+      setImageFile(droppedFile);
+      handleImageUpload(droppedFile);
+    }
+  }
 
-}
+  function handleRemoveImage() {
+    setImageFile(null);
+    setUploadedImageUrl("");
+    setFormData((prev) => ({ ...prev, image: "" }));
+    if (inputRef.current) inputRef.current.value = "";
+  }
 
+  return (
+    <div className="w-full mt-4">
+      <Label className="text-sm font-medium text-gray-700">Upload Image</Label>
 
-    return (
-        <div className="w-full max-w-md mx-auto mt-4">
-      <Label className="text-lg font-semibold mb-2 block">Upload Image</Label>
-          <div onDragOver={handleDragOver} onDrop={handleDrop} className="border-2 border-dashed rounded-lg p-4">
-            <Input id="image-upload" 
-            type="file" 
-           // className="hidden" 
-            ref={inputRef} 
-            onChange={handleImageFileChange}
-            />
+      <div
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+        className="border-2 border-dashed rounded-md p-4 mt-2"
+      >
+        {/* Hidden file input */}
+        <input
+          id="image-upload"
+          type="file"
+          ref={inputRef}
+          className="hidden"
+          onChange={handleImageFileChange}
+        />
 
-           {!imageFile ? (
-  <Label htmlFor="image-upload" className="flex flex-col items-center justify-center border border-dashed border-gray-300 rounded-md p-6 cursor-pointer">
-    <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
-    <span>Drag & drop or click to upload image</span>
-  </Label>
-) : (
-  <div className="flex items-center justify-between">
-    <div className="flex items-center">
-      <FileIcon className="w-8 text-primary mr-2 h-8" />
-      <span className="text-sm">{imageFile.name}</span>
+        {/* Show this when no file is selected */}
+        {!imageFile && !uploading ? (
+          <Label
+            htmlFor="image-upload"
+            className="flex flex-col items-center justify-center p-6 cursor-pointer border border-dashed rounded-md text-sm text-gray-500 hover:bg-gray-50"
+          >
+            <UploadCloudIcon className="w-10 h-10 text-gray-400 mb-2" />
+            <span>Drag & drop or click to upload image</span>
+          </Label>
+        ) : uploading ? (
+          <p className="text-sm text-blue-500">Uploading...</p>
+        ) : (
+          <div className="flex items-center justify-between mt-2">
+            <div className="flex items-center gap-2">
+              <FileIcon className="w-6 h-6 text-blue-600" />
+              <p className="text-sm font-medium">{imageFile.name}</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-red-500"
+              onClick={handleRemoveImage}
+            >
+              <XIcon className="w-4 h-4" />
+              <span className="sr-only">Remove File</span>
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
-    <button
-      onClick={() => setImageFile(null)}
-      className="text-red-500 text-sm hover:underline"
-    >
-      Remove
-    </button>
-  </div>
-)}
-
-
-         </div>
-        </div>
-    );
-
+  );
 }
+
 export default ProductsImageUpload;

@@ -35,7 +35,10 @@ const adminSidebarMenuItems = [
     label: "Orders",
     path: "/admin/orders",
     icon: <BadgeCheck size={20} />,
+
+
   },
+  
   
 ];
 
@@ -86,7 +89,15 @@ function AdminSideBar({ open, setOpen }) {
         <MenuItems setOpen={setOpen} />
       </div>
 
-      
+
+      {/* 👇 Bottom Section: Logout Button */}
+      <div className="p-4 border-t">
+        <Button variant="outline" size="icon">
+          <LogOut size={18} />
+          Logout
+        </Button>
+      </div>
+
 
     </div>
   </SheetContent>

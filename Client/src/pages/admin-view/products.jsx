@@ -1,77 +1,76 @@
-import CommonForm from "@/components/common/form";
-import { Button } from "@/components/ui/button";
+import React, { Fragment, useState } from "react";
 import {
   Sheet,
-  SheetTrigger,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Fragment, useState } from "react";
+import { Button } from "@/components/ui/button";
+import CommonForm from "@/components/common/form";
 import { addProductFormElements } from "@/config";
 import ProductsImageUpload from "@/components/admin-view/image-upload";
 
-
-
-const initialFormData = {
-    image : null,
-    title : '',
-    description : '',
-    category : '',
-    brand : '',
-    price : "",
-    salePrice : '',
-    totalStock : ''
-}
-
-
-
 function AdminProducts() {
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    price: "",
+    category: "",
+    image: "", // Will be updated after upload
+  });
 
-    const [openCreateProductsDialog, setOpenCreateProductsDialog] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
 
-    const [formData,setFormData] = useState(initialFormData);
-    const [imageFile, setImageFile] = useState(null);
-    const [uploadedImageUrl, setUploadedImageUrl] = useState('');
+  function handleSubmit(e) {
+    e.preventDefault();
 
-    function onSubmit() {
+    // Just for debug
+    console.log("Final Product Data:", formData);
 
+    // 👉 Call your Redux action or API to create the product
+    // dispatch(createProduct(formData));
+    setOpen(false);
+  }
 
-    }
+  return (
+    <Fragment>
+      {/* ➕ Button to open Add Product Sheet */}
+      <div className="flex justify-end p-4">
+        <Button onClick={() => setOpen(true)}>Add New Product</Button>
+      </div>
 
-    return (
-        <Fragment>
-        <div className="mb-3 w-full flex justify-end">
-        <Button onClick={()=> setOpenCreateProductsDialog(true)}> Add New Product</Button>
+      {/* 🧾 Slide-in Sheet */}
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent side="right" className="overflow-auto">
+          <SheetHeader>
+            <SheetTitle>Add New Product</SheetTitle>
+          </SheetHeader>
 
-        </div>
-        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4"></div>
-        <Sheet open={openCreateProductsDialog} onOpenChange={setOpenCreateProductsDialog}>
-  {/* Optional trigger – or you can just use your custom button */}
-  <SheetTrigger asChild>
-    
-  </SheetTrigger>
+          {/* 🖼️ Image Upload Section */}
+          <ProductsImageUpload
+            imageFile={imageFile}
+            setImageFile={setImageFile}
+            uploadedImageUrl={uploadedImageUrl}
+            setUploadedImageUrl={setUploadedImageUrl}
+            setFormData={setFormData} // 🔁 Needed to update formData.image
+          />
 
-  <SheetContent side="right" className="overflow-auto">
-    <SheetHeader>
-        
-      <SheetTitle>Add new Product</SheetTitle>
-    </SheetHeader>
-    <ProductsImageUpload file={imageFile} setFile={setImageFile} uploadedImageUrl={uploadedImageUrl} setUploadedImageUrl={setUploadedImageUrl}/>
-    <div className="py-6">
-      <CommonForm
-        onSubmit={onSubmit}
-        formData={formData}
-        setFormData={setFormData}
-        buttonText="Add"
-        formControls={addProductFormElements}
-      />
-    </div>
-  </SheetContent>
-</Sheet>
-
-        </Fragment>
-    );
+          {/* 📝 Form Inputs */}
+          <div className="py-6">
+            <CommonForm
+              onSubmit={handleSubmit}
+              formData={formData}
+              setFormData={setFormData}
+              buttonText="Add"
+              formControls={addProductFormElements}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+    </Fragment>
+  );
 }
 
 export default AdminProducts;
