@@ -17,6 +17,134 @@ const handleImageUpload = async (req, res) => {
   }
 };
 
+
+
+// ================================
+// ✅ CRUD Controllers (to implement)
+// ================================
+
+// ✅ Add a new product
+const addProduct = async (req, res) => {
+  try {
+    const
+     { title,
+       description,
+       price,
+       salePrice,
+       totalStock 
+      } = req.body;
+
+    const newlyCreatedProduct = new Product({
+      title,
+      description,
+      price,
+      salePrice,
+      totalStock,
+    });
+
+    await newlyCreatedProduct.save();
+
+    res.status(201).json({
+      success: true,
+      data: newlyCreatedProduct,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({
+      success: false,
+      message: "Error occured",
+    });
+  }
+};
+
+
+// ✅ Fetch all products
+const fetchAllProducts = async (req, res) => {
+  try {
+    const listOfProducts = await Product.find({});
+    res.status(200).json({
+      success: true,
+      data: listOfProducts,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({
+      success: false,
+      message: "Error occured",
+    });
+  }
+};
+
+
+// ✅ Edit a product
+const editProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const
+     { title,
+       description,
+       price,
+       salePrice,
+       totalStock 
+      } = req.body;
+
+      const findProduct  = await Product.findbyId(id);
+      if(!findProduct)
+      return res.status(404).json({
+        success : false,
+        message : "Product not found ",
+      });
+
+      
+    findProduct.title = title || findProduct.title;
+    findProduct.description = description || findProduct.description;
+    findProduct.category = category || findProduct.category;
+    findProduct.brand = brand || findProduct.brand;
+    findProduct.price = price || findProduct.price;
+    findProduct.salePrice = salePrice || findProduct.salePrice;
+    findProduct.totalStock = totalStock || findProduct.totalStock;
+    findProduct.image = image || findProduct.image;
+
+    await findProduct.save();
+
+    res.status(200).json({
+      success: true,
+      data: findProduct 
+    })
+       
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({
+      success: false,
+      message: "Error occured",
+    });
+  }
+};
+
+
+const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await Product.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({
+      success: false,
+      message: "Error occurred while deleting the product",
+    });
+  }
+};
+
+
+
+
 module.exports = {
-  handleImageUpload,
+  handleImageUpload, addProduct, fetchAllProducts, editProduct, deleteProduct
 };

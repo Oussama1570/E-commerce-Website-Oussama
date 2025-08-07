@@ -10,40 +10,43 @@ import CommonForm from "@/components/common/form";
 import { addProductFormElements } from "@/config";
 import ProductsImageUpload from "@/components/admin-view/image-upload";
 
-function AdminProducts() {
-  const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    category: "",
-    image: "", // Will be updated after upload
-  });
+const initialFormData = {
+  image: null,
+  title: "",
+  description: "",
+  category: "",
+  brand: "",
+  price: "",
+  salePrice: "",
+  totalStock: "",
+  averageReview: 0,
+};
 
+
+
+function AdminProducts() {
+  const [openCreateProductsDialog, setOpenCreateProductsDialog] =
+    useState(false);
+  const [formData, setFormData] = useState(initialFormData);
   const [imageFile, setImageFile] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
-  const [imageLoadingState, setImageLoadingState] = useState(false)
+  const [imageLoadingState, setImageLoadingState] = useState(false);
 
-  function handleSubmit(e) {
-    e.preventDefault();
+  function onSubmit() {}
 
-    // Just for debug
-    console.log("Final Product Data:", formData);
+  console.log(formData, "formData");
 
-    // 👉 Call your Redux action or API to create the product
-    // dispatch(createProduct(formData));
-    setOpen(false);
-  }
+  
 
   return (
     <Fragment>
       {/* ➕ Button to open Add Product Sheet */}
       <div className="flex justify-end p-4">
-        <Button onClick={() => setOpen(true)}>Add New Product</Button>
+        <Button onClick={() => setOpenCreateProductsDialog(true)}>Add New Product</Button>
       </div>
 
       {/* 🧾 Slide-in Sheet */}
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet open={openCreateProductsDialog} onOpenChange={setOpenCreateProductsDialog}>
         <SheetContent side="right" className="overflow-auto">
           <SheetHeader>
             <SheetTitle>Add New Product</SheetTitle>
@@ -62,7 +65,7 @@ function AdminProducts() {
           {/* 📝 Form Inputs */}
           <div className="py-6">
             <CommonForm
-              onSubmit={handleSubmit}
+              onSubmit={onSubmit}
               formData={formData}
               setFormData={setFormData}
               buttonText="Add"
