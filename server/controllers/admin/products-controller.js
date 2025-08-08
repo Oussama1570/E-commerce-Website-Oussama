@@ -1,4 +1,6 @@
 const { imageUploadUtil } = require("../../helpers/cloudinary");
+const Product = require("../../models/Product");
+
 
 const handleImageUpload = async (req, res) => {
   try {
@@ -23,37 +25,35 @@ const handleImageUpload = async (req, res) => {
 // ✅ CRUD Controllers (to implement)
 // ================================
 
-// ✅ Add a new product
+// controllers/admin/products-controller.js
 const addProduct = async (req, res) => {
   try {
-    const
-     { title,
-       description,
-       price,
-       salePrice,
-       totalStock 
-      } = req.body;
+    const {
+      title,
+      description,
+      category,
+      brand,
+      price,
+      salePrice,
+      totalStock,
+      image,           // 👈 include image
+    } = req.body;
 
     const newlyCreatedProduct = new Product({
       title,
       description,
+      category,
+      brand,
       price,
       salePrice,
       totalStock,
+      image,           // 👈 persist image
     });
 
     await newlyCreatedProduct.save();
-
-    res.status(201).json({
-      success: true,
-      data: newlyCreatedProduct,
-    });
+    res.status(201).json({ success: true, data: newlyCreatedProduct });
   } catch (e) {
-    console.log(e);
-    res.status(500).json({
-      success: false,
-      message: "Error occured",
-    });
+    res.status(500).json({ success: false, message: "Error occured" });
   }
 };
 
@@ -76,49 +76,39 @@ const fetchAllProducts = async (req, res) => {
 };
 
 
-// ✅ Edit a product
 const editProduct = async (req, res) => {
   try {
     const { id } = req.params;
+    const {
+      title,
+      description,
+      category,
+      brand,
+      price,
+      salePrice,
+      totalStock,
+      image,
+    } = req.body;
 
-    const
-     { title,
-       description,
-       price,
-       salePrice,
-       totalStock 
-      } = req.body;
+    const findProduct = await Product.findById(id); // 👈 correct casing
+    if (!findProduct) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
 
-      const findProduct  = await Product.findbyId(id);
-      if(!findProduct)
-      return res.status(404).json({
-        success : false,
-        message : "Product not found ",
-      });
-
-      
-    findProduct.title = title || findProduct.title;
-    findProduct.description = description || findProduct.description;
-    findProduct.category = category || findProduct.category;
-    findProduct.brand = brand || findProduct.brand;
-    findProduct.price = price || findProduct.price;
-    findProduct.salePrice = salePrice || findProduct.salePrice;
-    findProduct.totalStock = totalStock || findProduct.totalStock;
-    findProduct.image = image || findProduct.image;
+    // Only overwrite provided fields
+    if (title !== undefined) findProduct.title = title;
+    if (description !== undefined) findProduct.description = description;
+    if (category !== undefined) findProduct.category = category;
+    if (brand !== undefined) findProduct.brand = brand;
+    if (price !== undefined) findProduct.price = price;
+    if (salePrice !== undefined) findProduct.salePrice = salePrice;
+    if (totalStock !== undefined) findProduct.totalStock = totalStock;
+    if (image !== undefined) findProduct.image = image;
 
     await findProduct.save();
-
-    res.status(200).json({
-      success: true,
-      data: findProduct 
-    })
-       
+    res.status(200).json({ success: true, data: findProduct });
   } catch (e) {
-    console.log(e);
-    res.status(500).json({
-      success: false,
-      message: "Error occured",
-    });
+    res.status(500).json({ success: false, message: "Error occured" });
   }
 };
 

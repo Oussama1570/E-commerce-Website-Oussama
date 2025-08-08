@@ -10,72 +10,81 @@ export const addNewProduct = createAsyncThunk(
   "/products/addnewproduct",
   async (formData) => {
     const result = await axios.post(
-      "http://localhost:5000/api/admin/products/add", 
+      "http://localhost:5000/api/admin/products/add",
       formData,
       {
         headers: {
-            "Content-Type" : "application/json",
+          "Content-Type": "application/json",
         },
       }
     );
+
     return result?.data;
   }
 );
 
-
+// ✅ get all products
 export const fetchAllProducts = createAsyncThunk(
-  "/products/addnewproduct",
-  async (formData) => {
-    const result = await axios.post(
-      "http://localhost:5000/api/admin/products/get", 
-      
+  "/products/fetchAllProducts",
+  async () => {
+    const result = await axios.get(
+      "http://localhost:5000/api/admin/products/get"
     );
+
     return result?.data;
   }
 );
 
+// ✅ edit product
 export const editProduct = createAsyncThunk(
-  "/products/editproduct",
-  async (id, formData) => {
-    const result = await axios.post(
-      "http://localhost:5000/api/admin/products/add", 
+  "/products/editProduct",
+  async ({ id, formData }) => {
+    const result = await axios.put(
+      `http://localhost:5000/api/admin/products/edit/${id}`,
       formData,
       {
         headers: {
-            "Content-Type" : "application/json",
+          "Content-Type": "application/json",
         },
       }
     );
+
     return result?.data;
   }
 );
 
-export const addNewProduct = createAsyncThunk(
-  "/products/addnewproduct",
+// ✅ Delete product
+export const deleteProduct = createAsyncThunk(
+  "/products/deleteproduct",
   async (formData) => {
-    const result = await axios.post(
-      "http://localhost:5000/api/admin/products/add", 
-      formData,
-      {
-        headers: {
-            "Content-Type" : "application/json",
-        },
-      }
-    );
+    const result = await axios.delete(
+      `http://localhost:5000/api/admin/products/delete${id}`, 
+      );
     return result?.data;
   }
 );
 
 // ✅ Create slice
-const AdminProductsSlice = createSlice({
+const adminProductsSlice = createSlice({
   name: "adminProducts",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(addNewProduct.fulfilled, (state, action) => {
-      state.productList.push(action.payload);
-    });
+    builder
+      .addCase(fetchAllProducts.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchAllProducts.fulfilled, (state, action) => {
+        // exactly like in the video: payload.data holds the array
+        console.log(action.payload);
+        state.isLoading = false;
+        state.productList = action.payload.data; // 👈 key line from the video
+      })
+      .addCase(fetchAllProducts.rejected, (state) => {
+        state.isLoading = false;
+        state.productList = [];
+      });
   },
 });
 
-export default AdminProductsSlice.reducer;
+export default adminProductsSlice.reducer;

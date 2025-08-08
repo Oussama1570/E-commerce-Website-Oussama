@@ -4,6 +4,8 @@ import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
+import { Skeleton } from "@/components/ui/skeleton"; // adjust path if needed
+
 
 function ProductsImageUpload({
   imageFile,
@@ -75,9 +77,7 @@ function ProductsImageUpload({
 
   return (
     <div className="w-full mt-4">
-      <Label className="text-sm font-medium text-gray-700">
-        Upload Image
-      </Label>
+      <Label className="text-sm font-medium text-gray-700">Upload Image</Label>
 
       <div
         onDragOver={handleDragOver}
@@ -92,18 +92,23 @@ function ProductsImageUpload({
           onChange={handleImageFileChange}
         />
 
-        {!imageFile && !uploading ? (
+        {/* Branch 1: No file yet */}
+        {!imageFile ? (
           <Label
             htmlFor="image-upload"
-            className="flex flex-col items-center justify-center p-6 cursor-pointer border border-dashed rounded-md text-sm text-gray-500 hover:bg-gray-50"
+            className="flex flex-col items-center justify-center p-6 cursor-pointer rounded-md text-sm text-gray-500 hover:bg-gray-50"
           >
             <UploadCloudIcon className="w-10 h-10 text-gray-400 mb-2" />
             <span>Drag & drop or click to upload image</span>
           </Label>
-        ) : uploading || imageLoadingState ? (
-          <p className="text-sm text-blue-500">Uploading...</p>
+        ) : /* Branch 2: uploading or loading */ uploading || imageLoadingState ? (
+          <div className="space-y-2">
+            <Skeleton className="h-10 w-full bg-gray-100" />
+            <p className="text-sm text-blue-500">Uploading...</p>
+          </div>
         ) : (
-          <div className="flex items-center justify-between mt-2">
+          /* Branch 3: file chosen and not uploading */
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileIcon className="w-6 h-6 text-blue-600" />
               <p className="text-sm font-medium">{imageFile?.name}</p>

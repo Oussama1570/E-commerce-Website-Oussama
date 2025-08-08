@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -9,6 +9,10 @@ import { Button } from "@/components/ui/button";
 import CommonForm from "@/components/common/form";
 import { addProductFormElements } from "@/config";
 import ProductsImageUpload from "@/components/admin-view/image-upload";
+import { useDispatch, useSelector } from 'react-redux';
+import { addNewProduct, fetchAllProducts } from "@/store/admin/products-slice";
+import { useToast } from "@/components/ui/use-toast";
+import AdminProductTile from "@/components/admin-view/product-tile";
 
 const initialFormData = {
   image: null,
@@ -31,10 +35,45 @@ function AdminProducts() {
   const [imageFile, setImageFile] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [imageLoadingState, setImageLoadingState] = useState(false);
+  const {productList} = useSelector(state=>state.adminProducts)
+  const dispatch = useDispatch();
+  const {toast} = useToast()
 
-  function onSubmit() {}
+  function onSubmit(e) {
+  e.preventDefault();
 
-  console.log(formData, "formData");
+  if (imageLoadingState) {
+    toast({ title: "Please wait for the image to finish uploading." });
+    return;
+  }
+
+  dispatch(addNewProduct({ ...formData, image: uploadedImageUrl }))
+    .then((res) => {
+      if (res?.payload?.success) {
+        dispatch(fetchAllProducts());
+        setImageFile(null);
+        setUploadedImageUrl("");
+        setFormData(initialFormData);
+        setOpenCreateProductsDialog(false);
+        toast({ title: "Product added successfully" });
+      } else {
+        toast({
+          title: "Failed to add product",
+          description: res?.error?.message || "Please try again.",
+          variant: "destructive",
+        });
+      }
+    });
+}
+
+
+
+
+  useEffect(() => {
+    dispatch(fetchAllProducts());
+  }, [dispatch]);
+
+  console.log(productList, uploadedImageUrl, "productList");
 
   
 
@@ -42,8 +81,20 @@ function AdminProducts() {
     <Fragment>
       {/* ➕ Button to open Add Product Sheet */}
       <div className="flex justify-end p-4">
-        <Button onClick={() => setOpenCreateProductsDialog(true)}>Add New Product</Button>
+        <Button onClick={() => setOpenCreateProductsDialog(true)}>
+          Add New Product
+          </Button>
       </div>
+
+
+      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
+  {productList && productList.length > 0 ? (
+    productList.map((p) => <AdminProductTile key={p._id} product={p} />)
+  ) : (
+    <p className="col-span-full text-sm text-muted-foreground">No products found.</p>
+  )}
+</div>
+
 
       {/* 🧾 Slide-in Sheet */}
       <Sheet open={openCreateProductsDialog} onOpenChange={setOpenCreateProductsDialog}>
