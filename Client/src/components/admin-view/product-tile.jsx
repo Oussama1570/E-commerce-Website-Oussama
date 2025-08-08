@@ -1,42 +1,52 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardFooter } from "../ui/card";
 
-function AdminProductTile({ product }) {
+function AdminProductTile({
+  product,
+  setFormData,
+  setOpenCreateProductsDialog,
+  setCurrentEditedId,
+  handleDelete,
+}) {
   return (
-    <div className="border rounded-lg shadow-sm overflow-hidden">
-      {/* Product Image */}
-      <img
-        src={product.image}
-        alt={product.title}
-        className="w-full h-48 object-cover"
-      />
-
-      {/* Product Details */}
-      <div className="p-4">
-        <h3 className="text-lg font-medium">{product.title}</h3>
-
-        {/* Price */}
-        <div className="mt-2 text-sm font-semibold">
-          {product.salePrice ? (
-            <>
-              <span className="line-through mr-2">${product.price}</span>
-              <span>${product.salePrice}</span>
-            </>
-          ) : (
-            <span>${product.price}</span>
-          )}
+    <Card className="w-full max-w-sm mx-auto">
+      <div>
+        <div className="relative">
+          <img
+            src={product?.image}
+            alt={product?.title}
+            className="w-full h-[300px] object-cover rounded-t-lg"
+          />
         </div>
-
-        {/* Actions */}
-        <div className="flex gap-2 mt-4">
-          <Button variant="outline" size="sm">
+        <CardContent>
+          <h2 className="text-xl font-bold mb-2 mt-2">{product?.title}</h2>
+          <div className="flex justify-between items-center mb-2">
+            <span
+              className={`${
+                product?.salePrice > 0 ? "line-through" : ""
+              } text-lg font-semibold text-primary`}
+            >
+              ${product?.price}
+            </span>
+            {product?.salePrice > 0 ? (
+              <span className="text-lg font-bold">${product?.salePrice}</span>
+            ) : null}
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-between items-center">
+          <Button
+            onClick={() => {
+              setOpenCreateProductsDialog(true);
+              setCurrentEditedId(product?._id);
+              setFormData(product);
+            }}
+          >
             Edit
           </Button>
-          <Button variant="destructive" size="sm">
-            Delete
-          </Button>
-        </div>
+          <Button onClick={() => handleDelete(product?._id)}>Delete</Button>
+        </CardFooter>
       </div>
-    </div>
+    </Card>
   );
 }
 

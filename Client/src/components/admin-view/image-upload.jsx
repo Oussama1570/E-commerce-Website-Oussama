@@ -1,11 +1,9 @@
 import { useRef, useState, useEffect } from "react";
-import { Input } from "../ui/input";
-import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import axios from "axios";
-import { Skeleton } from "@/components/ui/skeleton"; // adjust path if needed
-
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { File as FileIcon, UploadCloud as UploadCloudIcon, X as XIcon } from "lucide-react";
 
 function ProductsImageUpload({
   imageFile,
@@ -13,14 +11,20 @@ function ProductsImageUpload({
   uploadedImageUrl,
   setUploadedImageUrl,
   setFormData,
+  setImageLoadingState,   // from parent
+  imageLoadingState = false, // from parent
+  currentEditedId,        // from parent
 }) {
   const inputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
-  const [imageLoadingState, setImageLoadingState] = useState(false);
+
+  const isEditMode = Boolean(currentEditedId);
 
   async function uploadImageToCloudinary(file) {
     try {
-      setImageLoadingState(true);
+      setUploading(true);
+      if (setImageLoadingState) setImageLoadingState(true);
+
       const data = new FormData();
       data.append("my_file", file);
 
@@ -29,25 +33,22 @@ function ProductsImageUpload({
         data
       );
 
-      console.log(response, "response");
-
-      if (response?.data?.result?.url) {
-        const imageUrl = response.data.result.url;
-        setUploadedImageUrl(imageUrl);
-        setFormData((prev) => ({ ...prev, image: imageUrl }));
+      const url = response?.data?.result?.url;
+      if (url) {
+        setUploadedImageUrl(url);
+        setFormData((prev) => ({ ...prev, image: url }));
       }
     } catch (error) {
       console.error("Upload failed", error);
     } finally {
-      setImageLoadingState(false);
+      setUploading(false);
+      if (setImageLoadingState) setImageLoadingState(false);
     }
   }
 
   function handleImageFileChange(event) {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      setImageFile(selectedFile);
-    }
+    const file = event.target.files?.[0];
+    if (file) setImageFile(file);
   }
 
   function handleDragOver(event) {
@@ -56,10 +57,8 @@ function ProductsImageUpload({
 
   function handleDrop(event) {
     event.preventDefault();
-    const droppedFile = event.dataTransfer.files?.[0];
-    if (droppedFile) {
-      setImageFile(droppedFile);
-    }
+    const file = event.dataTransfer.files?.[0];
+    if (file) setImageFile(file);
   }
 
   function handleRemoveImage() {
@@ -70,9 +69,8 @@ function ProductsImageUpload({
   }
 
   useEffect(() => {
-    if (imageFile !== null) {
-      uploadImageToCloudinary(imageFile);
-    }
+    if (imageFile) uploadImageToCloudinary(imageFile);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageFile]);
 
   return (
@@ -80,24 +78,29 @@ function ProductsImageUpload({
       <Label className="text-sm font-medium text-gray-700">Upload Image</Label>
 
       <div
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-        className="border-2 border-dashed rounded-md p-4 mt-2"
-      >
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      className={`${
+        isEditMode ? "opacity-60 cursor-not-allowed" : ""
+      } border-2 border-dashed rounded-lg p-4`}
+    >
         <input
           id="image-upload"
+          className="hidden"
           type="file"
           ref={inputRef}
-          className="hidden"
           onChange={handleImageFileChange}
+          disabled={isEditMode}
         />
 
         {/* Branch 1: No file yet */}
         {!imageFile ? (
           <Label
-            htmlFor="image-upload"
-            className="flex flex-col items-center justify-center p-6 cursor-pointer rounded-md text-sm text-gray-500 hover:bg-gray-50"
-          >
+    htmlFor="image-upload"
+    className={`${
+      isEditMode ? "cursor-not-allowed opacity-60" : ""
+    } flex flex-col items-center justify-center h-32 cursor-pointer border border-dashed rounded-md gap-2`}
+  >
             <UploadCloudIcon className="w-10 h-10 text-gray-400 mb-2" />
             <span>Drag & drop or click to upload image</span>
           </Label>
@@ -130,3 +133,4 @@ function ProductsImageUpload({
 }
 
 export default ProductsImageUpload;
+
