@@ -90,20 +90,20 @@ const editProduct = async (req, res) => {
       image,
     } = req.body;
 
-    const findProduct = await Product.findById(id); // 👈 correct casing
+    const findProduct = await Product.findById(id);
     if (!findProduct) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
 
-    // Only overwrite provided fields
-    if (title !== undefined) findProduct.title = title;
-    if (description !== undefined) findProduct.description = description;
-    if (category !== undefined) findProduct.category = category;
-    if (brand !== undefined) findProduct.brand = brand;
-    if (price !== undefined) findProduct.price = price;
-    if (salePrice !== undefined) findProduct.salePrice = salePrice;
-    if (totalStock !== undefined) findProduct.totalStock = totalStock;
-    if (image !== undefined) findProduct.image = image;
+    // like in the video: use incoming value if truthy, else keep old
+    findProduct.title = title || findProduct.title;
+    findProduct.description = description || findProduct.description;
+    findProduct.category = category || findProduct.category;
+    findProduct.brand = brand || findProduct.brand;
+    findProduct.price = price || findProduct.price;
+    findProduct.salePrice = salePrice || findProduct.salePrice;
+    findProduct.totalStock = totalStock || findProduct.totalStock;
+    findProduct.image = image || findProduct.image;
 
     await findProduct.save();
     res.status(200).json({ success: true, data: findProduct });
@@ -111,7 +111,6 @@ const editProduct = async (req, res) => {
     res.status(500).json({ success: false, message: "Error occured" });
   }
 };
-
 
 const deleteProduct = async (req, res) => {
   try {

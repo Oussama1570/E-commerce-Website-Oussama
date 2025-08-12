@@ -1,3 +1,4 @@
+// src/components/common/form.jsx
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import {
@@ -8,10 +9,17 @@ import {
   SelectItem,
 } from "../ui/select";
 
-function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText }) {
+function CommonForm({
+  formControls,
+  formData,
+  setFormData,
+  onSubmit,
+  buttonText,
+  isBtnDisabled = false,   // ✅ add this line
+}) {
   function renderInputsByComponentType(getControlItem) {
     let element = null;
-    const value = formData[getControlItem.name] || "";
+    const value = formData[getControlItem.name] ?? "";
 
     switch (getControlItem.componentType) {
       case "input":
@@ -28,8 +36,7 @@ function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText 
                 [getControlItem.name]: event.target.value,
               })
             }
-           className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-black text-sm rounded-md"
-
+            className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-black text-sm rounded-md"
           />
         );
         break;
@@ -37,10 +44,10 @@ function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText 
       case "select":
         element = (
           <Select
-            onValueChange={(value) =>
+            onValueChange={(val) =>
               setFormData({
                 ...formData,
-                [getControlItem.name]: value,
+                [getControlItem.name]: val,
               })
             }
             value={value}
@@ -49,12 +56,11 @@ function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText 
               <SelectValue placeholder={getControlItem.placeholder} />
             </SelectTrigger>
             <SelectContent>
-              {getControlItem.options &&
-                getControlItem.options.map((optionItem) => (
-                  <SelectItem key={optionItem.id} value={optionItem.id}>
-                    {optionItem.label}
-                  </SelectItem>
-                ))}
+              {getControlItem.options?.map((opt) => (
+                <SelectItem key={opt.id} value={opt.id}>
+                  {opt.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         );
@@ -74,7 +80,6 @@ function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText 
               })
             }
             className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-black text-sm rounded-md"
-
           />
         );
         break;
@@ -98,7 +103,8 @@ function CommonForm({ formControls, formData, setFormData, onSubmit, buttonText 
           </div>
         ))}
       </div>
-      <Button type="submit" className="mt-4 w-full">
+
+      <Button disabled={isBtnDisabled} type="submit" className="mt-2 w-full">
         {buttonText || "Submit"}
       </Button>
     </form>

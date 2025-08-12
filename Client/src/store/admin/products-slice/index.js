@@ -1,70 +1,75 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const API = "http://localhost:5000"; // or import.meta.env.VITE_API_URL
+
 const initialState = {
   productList: [],
+  isLoading: false,
 };
 
-// ✅ Add new product
+/* Add product */
 export const addNewProduct = createAsyncThunk(
-  "/products/addnewproduct",
-  async (formData) => {
-    const result = await axios.post(
-      "http://localhost:5000/api/admin/products/add",
-      formData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    return result?.data;
-  }
-);
-
-// ✅ get all products
-export const fetchAllProducts = createAsyncThunk(
-  "/products/fetchAllProducts",
-  async () => {
-    const result = await axios.get(
-      "http://localhost:5000/api/admin/products/get"
-    );
-
-    return result?.data;
-  }
-);
-
-// ✅ edit product
-export const editProduct = createAsyncThunk(
-  "/products/editProduct",
-  async ({ id, formData }) => {
-    const result = await axios.put(
-      `http://localhost:5000/api/admin/products/edit/${id}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    return result?.data;
-  }
-);
-
-// ✅ Delete product
-export const deleteProduct = createAsyncThunk(
-  "/products/deleteproduct",
-  async (formData) => {
-    const result = await axios.delete(
-      `http://localhost:5000/api/admin/products/delete${id}`, 
+  "products/addNew",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.post(
+        `${API}/api/admin/products/add`,
+        formData,
+        { headers: { "Content-Type": "application/json" } }
       );
-    return result?.data;
+      return data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data || { success: false });
+    }
   }
 );
 
-// ✅ Create slice
+/* Fetch all */
+export const fetchAllProducts = createAsyncThunk(
+  "products/fetchAll",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.get(`${API}/api/admin/products/get`);
+      return data; // { success, data: [...] }
+    } catch (err) {
+      return rejectWithValue(err?.response?.data || { success: false });
+    }
+  }
+);
+
+/* Edit */
+export const editProduct = createAsyncThunk(
+  "products/edit",
+  async ({ id, formData }, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.put(
+        `${API}/api/admin/products/edit/${id}`,
+        formData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      return data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data || { success: false });
+    }
+  }
+);
+
+/* Delete — FIXED */
+export const deleteProduct = createAsyncThunk(
+  "products/delete",
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data } = await axios.delete(
+        `${API}/api/admin/products/delete/${id}`
+      );
+      return data; // { success: true, message: ... }
+    } catch (err) {
+      return rejectWithValue(err?.response?.data || { success: false });
+    }
+  }
+);
+
 const adminProductsSlice = createSlice({
   name: "adminProducts",
   initialState,
@@ -75,10 +80,8 @@ const adminProductsSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(fetchAllProducts.fulfilled, (state, action) => {
-        // exactly like in the video: payload.data holds the array
-        console.log(action.payload);
         state.isLoading = false;
-        state.productList = action.payload.data; // 👈 key line from the video
+        state.productList = action.payload?.data || [];
       })
       .addCase(fetchAllProducts.rejected, (state) => {
         state.isLoading = false;
